@@ -1,8 +1,9 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
-// Bogie class (same as UC7)
+// Bogie class (same as UC7/UC8)
 class Bogie {
     String name;
     int capacity;
@@ -25,30 +26,33 @@ public class TrainApp {
         System.out.println("=== Train Consist Management App ===");
 
         // =========================
-        // UC8: Stream Filtering
+        // UC9: Group Bogies by Type
         // =========================
 
-        // Create bogie list (reuse UC7 idea)
+        // Create a list of bogies
         List<Bogie> bogies = new ArrayList<>();
         bogies.add(new Bogie("Sleeper", 72));
         bogies.add(new Bogie("AC Chair", 60));
         bogies.add(new Bogie("First Class", 24));
+        bogies.add(new Bogie("Sleeper", 72)); // duplicate type to test grouping
 
         // Display original list
         System.out.println("\nAll Bogies:");
         bogies.forEach(System.out::println);
 
-        // Filter bogies with capacity > 60
-        List<Bogie> filteredBogies = bogies.stream()
-                .filter(b -> b.capacity > 60)
-                .collect(Collectors.toList());
+        // Group bogies by name/type using groupingBy
+        Map<String, List<Bogie>> groupedBogies = bogies.stream()
+                .collect(Collectors.groupingBy(b -> b.name));
 
-        // Display filtered result
-        System.out.println("\nFiltered Bogies (Capacity > 60):");
-        filteredBogies.forEach(System.out::println);
+        // Display grouped bogies
+        System.out.println("\nGrouped Bogies by Type:");
+        groupedBogies.forEach((type, list) -> {
+            System.out.println(type + ":");
+            list.forEach(b -> System.out.println("  " + b));
+        });
 
         // Verify original list unchanged
-        System.out.println("\nOriginal List After Filtering (Unchanged):");
+        System.out.println("\nOriginal List After Grouping (Unchanged):");
         bogies.forEach(System.out::println);
 
         // Program continues...
