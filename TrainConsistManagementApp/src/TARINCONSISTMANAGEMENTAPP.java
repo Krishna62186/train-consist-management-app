@@ -1,54 +1,46 @@
 import java.util.Arrays;
 import java.util.Scanner;
 
-public class BinarySearchBogieApp {
+public class SearchWithValidationApp {
 
     public static void main(String[] args) {
-        // Sample unsorted bogie IDs
-        String[] bogieIDs = {"BG309", "BG101", "BG550", "BG205", "BG412"};
-
-        System.out.println("Available Bogie IDs (unsorted): " + Arrays.toString(bogieIDs));
-
-        // Sort the array first (binary search precondition)
-        Arrays.sort(bogieIDs);
-        System.out.println("Sorted Bogie IDs: " + Arrays.toString(bogieIDs));
+        // Example bogie collection (can be empty to test exception)
+        String[] bogieIDs = {}; // Try changing to {"BG101","BG205","BG309"} to test normal search
 
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter bogie ID to search:");
         String searchKey = scanner.nextLine();
 
-        int resultIndex = binarySearch(bogieIDs, searchKey);
-
-        if (resultIndex != -1) {
-            System.out.println("Bogie ID " + searchKey + " found at position " + resultIndex + ".");
-        } else {
-            System.out.println("Bogie ID " + searchKey + " not found in the train consist.");
+        try {
+            boolean found = searchBogieWithValidation(bogieIDs, searchKey);
+            if (found) {
+                System.out.println("Bogie ID " + searchKey + " found in the train consist.");
+            } else {
+                System.out.println("Bogie ID " + searchKey + " not found in the train consist.");
+            }
+        } catch (IllegalStateException e) {
+            System.out.println("Error: " + e.getMessage());
         }
 
         scanner.close();
     }
 
     /**
-     * Binary search for a sorted array of String bogie IDs.
-     * Returns index if found, -1 if not found.
+     * Searches for a bogie ID with state validation.
+     * Throws IllegalStateException if bogie collection is empty.
      */
-    public static int binarySearch(String[] sortedArray, String key) {
-        int low = 0;
-        int high = sortedArray.length - 1;
-
-        while (low <= high) {
-            int mid = low + (high - low) / 2;
-            int comparison = key.compareTo(sortedArray[mid]);
-
-            if (comparison == 0) {
-                return mid;  // Found
-            } else if (comparison < 0) {
-                high = mid - 1;  // Search left half
-            } else {
-                low = mid + 1;   // Search right half
-            }
+    public static boolean searchBogieWithValidation(String[] bogies, String key) {
+        // Fail-fast validation
+        if (bogies == null || bogies.length == 0) {
+            throw new IllegalStateException("Cannot search: No bogies exist in the train consist.");
         }
 
-        return -1;  // Not found
+        // Linear search logic
+        for (String bogieID : bogies) {
+            if (bogieID.equals(key)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
