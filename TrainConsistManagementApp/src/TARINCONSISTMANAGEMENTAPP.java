@@ -1,64 +1,76 @@
-import java.util.*;
-
 // ------------------------
-// Custom Exception Class
+// Custom Runtime Exception
 // ------------------------
-class InvalidCapacityException extends Exception {
-    public InvalidCapacityException(String message) {
+class CargoSafetyException extends RuntimeException {
+    public CargoSafetyException(String message) {
         super(message);
     }
 }
 
 // ------------------------
-// Passenger Bogie Class
+// GoodsBogie Class
 // ------------------------
-class PassengerBogie {
+class GoodsBogie {
 
-    private String type;
-    private int capacity;
+    private String shape; // e.g., Rectangular, Cylindrical
+    private String cargo; // cargo assigned
 
-    // Constructor with validation
-    public PassengerBogie(String type, int capacity) throws InvalidCapacityException {
-        if (capacity <= 0) {
-            throw new InvalidCapacityException("Capacity must be greater than zero");
+    public GoodsBogie(String shape) {
+        this.shape = shape;
+    }
+
+    public String getShape() {
+        return shape;
+    }
+
+    public String getCargo() {
+        return cargo;
+    }
+
+    // Method to assign cargo with safety validation
+    public void assignCargo(String cargo) {
+        try {
+            // Safety rule: Rectangular bogie cannot carry Petroleum
+            if (shape.equalsIgnoreCase("Rectangular") && cargo.equalsIgnoreCase("Petroleum")) {
+                throw new CargoSafetyException("Unsafe cargo: Petroleum cannot be assigned to Rectangular bogie");
+            }
+
+            // Safe assignment
+            this.cargo = cargo;
+            System.out.println("Cargo assigned successfully: " + cargo + " to " + shape + " bogie");
+
+        } catch (CargoSafetyException e) {
+            // Handle unsafe assignment
+            System.out.println("Error: " + e.getMessage());
+
+        } finally {
+            // Cleanup / logging
+            System.out.println("Cargo assignment attempt completed for " + shape + " bogie.\n");
         }
-        this.type = type;
-        this.capacity = capacity;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public int getCapacity() {
-        return capacity;
     }
 }
 
 // ------------------------
 // Main Application
 // ------------------------
-public class TrainExceptionApp {
+public class SafeCargoAssignmentApp {
 
     public static void main(String[] args) {
 
-        try {
-            // Creating valid bogie
-            PassengerBogie b1 = new PassengerBogie("Sleeper", 72);
-            System.out.println("Created: " + b1.getType() + " with capacity " + b1.getCapacity());
+        // Create bogies
+        GoodsBogie cylindricalBogie = new GoodsBogie("Cylindrical");
+        GoodsBogie rectangularBogie = new GoodsBogie("Rectangular");
 
-            // Attempting invalid bogie (zero capacity)
-            PassengerBogie b2 = new PassengerBogie("AC Chair", 0);
-            System.out.println("Created: " + b2.getType() + " with capacity " + b2.getCapacity());
+        // Safe cargo assignment
+        cylindricalBogie.assignCargo("Petroleum");
 
-            // Attempting invalid bogie (negative capacity)
-            PassengerBogie b3 = new PassengerBogie("First Class", -10);
-            System.out.println("Created: " + b3.getType() + " with capacity " + b3.getCapacity());
+        // Unsafe cargo assignment
+        rectangularBogie.assignCargo("Petroleum");
 
-        } catch (InvalidCapacityException e) {
-            System.out.println("Error: " + e.getMessage());
-        }
+        // Assign safe cargo to rectangular bogie
+        rectangularBogie.assignCargo("Coal");
 
-        System.out.println("Program continues safely...");
+        // Program continues safely
+        System.out.println("All cargo assignments processed. System running normally.");
     }
 }
